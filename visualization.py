@@ -33,3 +33,21 @@ def plot_stock_chart(symbol):
     )
     
     return fig
+
+def plot_comparison_chart(symbols):
+    fig = go.Figure()
+
+    for symbol in symbols:
+        stock = yf.Ticker(symbol)
+        hist = stock.history(period="1y")
+        fig.add_trace(go.Scatter(x=hist.index, y=hist['Close'], name=symbol))
+
+    fig.update_layout(
+        title='Stock Price Comparison',
+        xaxis_title='Date',
+        yaxis_title='Closing Price',
+        legend_title='Symbols',
+        height=600
+    )
+
+    return fig
