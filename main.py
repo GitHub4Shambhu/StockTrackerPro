@@ -3,6 +3,7 @@ import pandas as pd
 from stock_data import get_stock_data
 from options_data import get_options_data
 from visualization import plot_stock_chart, plot_comparison_chart
+from news_sentiment import get_news_sentiment
 
 st.set_page_config(
     page_title="Stock & Options Analyzer",
@@ -37,11 +38,26 @@ if st.button("Analyze"):
         fig = plot_comparison_chart(symbols)
         st.plotly_chart(fig, use_container_width=True)
 
-        # Display individual stock charts with technical indicators
+        # Display individual stock charts with technical indicators and news sentiment
         for symbol in symbols:
-            st.subheader(f"{symbol} Stock Price History and Technical Indicators")
-            fig = plot_stock_chart(symbol)
-            st.plotly_chart(fig, use_container_width=True)
+            st.subheader(f"{symbol} Stock Analysis")
+            
+            col1, col2 = st.columns([2, 1])
+            
+            with col1:
+                st.subheader("Price History and Technical Indicators")
+                fig = plot_stock_chart(symbol)
+                st.plotly_chart(fig, use_container_width=True)
+            
+            with col2:
+                st.subheader("News Sentiment Analysis")
+                news_sentiment = get_news_sentiment(symbol)
+                if news_sentiment is not None:
+                    st.write(f"Average Sentiment: {news_sentiment['sentiment'].mean():.2f}")
+                    st.bar_chart(news_sentiment['sentiment_category'].value_counts())
+                    st.dataframe(news_sentiment[['title', 'sentiment_category', 'url']])
+                else:
+                    st.write("Unable to fetch news sentiment data.")
 
         # Fetch and display options data for each symbol
         for symbol in symbols:
@@ -76,11 +92,9 @@ st.sidebar.markdown("""
 2. Click the 'Analyze' button to fetch and display data
 3. View the stock information comparison table
 4. Explore the stock price comparison chart
-5. Check individual stock price history charts with technical indicators:
-   - Candlestick chart
-   - 20-day and 50-day Moving Averages
-   - Relative Strength Index (RSI)
-   - Volume
+5. Check individual stock analysis:
+   - Price history chart with technical indicators
+   - News sentiment analysis
 6. Review options data for each stock
 7. Download all data as a CSV file using the button below the tables
 """)

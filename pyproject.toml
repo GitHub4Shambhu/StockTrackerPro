@@ -11,6 +11,8 @@ streamlit = "^1.39.0"
 yfinance = "^0.2.44"
 plotly = "^5.24.1"
 pandas = "^2.2.3"
+newsapi-python = "^0.2.7"
+textblob = "^0.18.0.post0"
 
 
 [build-system]
