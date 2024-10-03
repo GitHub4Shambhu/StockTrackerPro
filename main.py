@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from datetime import date, timedelta
 from stock_data import get_stock_data
 from options_data import get_options_data
 from visualization import plot_stock_chart, plot_comparison_chart
@@ -17,11 +18,18 @@ st.title("Stock & Options Data Visualization")
 symbols = st.text_input("Enter Stock Symbols (comma-separated, e.g., AAPL,GOOGL,MSFT):", "AAPL,GOOGL,MSFT").upper().split(',')
 symbols = [symbol.strip() for symbol in symbols]
 
+# Date range selection
+col1, col2 = st.columns(2)
+with col1:
+    start_date = st.date_input("Start Date", date.today() - timedelta(days=365))
+with col2:
+    end_date = st.date_input("End Date", date.today())
+
 if st.button("Analyze"):
     # Fetch stock data for all symbols
     stock_data_list = []
     for symbol in symbols:
-        data = get_stock_data(symbol)
+        data = get_stock_data(symbol, start_date, end_date)
         if data is not None:
             stock_data_list.append(data)
 
@@ -35,7 +43,7 @@ if st.button("Analyze"):
 
         # Plot comparison chart
         st.subheader("Stock Price Comparison")
-        fig = plot_comparison_chart(symbols)
+        fig = plot_comparison_chart(symbols, start_date, end_date)
         st.plotly_chart(fig, use_container_width=True)
 
         # Display individual stock charts with technical indicators and news sentiment
@@ -46,7 +54,7 @@ if st.button("Analyze"):
             
             with col1:
                 st.subheader("Price History and Technical Indicators")
-                fig = plot_stock_chart(symbol)
+                fig = plot_stock_chart(symbol, start_date, end_date)
                 st.plotly_chart(fig, use_container_width=True)
             
             with col2:
@@ -61,7 +69,7 @@ if st.button("Analyze"):
 
         # Fetch and display options data for each symbol
         for symbol in symbols:
-            options_data = get_options_data(symbol)
+            options_data = get_options_data(symbol, end_date)
             if options_data is not None:
                 st.subheader(f"{symbol} Options Data")
                 st.dataframe(options_data)
@@ -69,7 +77,7 @@ if st.button("Analyze"):
         # Combine all data for CSV download
         all_data = [combined_stock_data]
         for symbol in symbols:
-            options_data = get_options_data(symbol)
+            options_data = get_options_data(symbol, end_date)
             if options_data is not None:
                 all_data.append(options_data)
 
@@ -89,12 +97,13 @@ if st.button("Analyze"):
 st.sidebar.markdown("""
 ## How to use this app:
 1. Enter valid stock symbols separated by commas (e.g., AAPL,GOOGL,MSFT)
-2. Click the 'Analyze' button to fetch and display data
-3. View the stock information comparison table
-4. Explore the stock price comparison chart
-5. Check individual stock analysis:
+2. Select the desired date range for historical data
+3. Click the 'Analyze' button to fetch and display data
+4. View the stock information comparison table
+5. Explore the stock price comparison chart
+6. Check individual stock analysis:
    - Price history chart with technical indicators
    - News sentiment analysis
-6. Review options data for each stock
-7. Download all data as a CSV file using the button below the tables
+7. Review options data for each stock
+8. Download all data as a CSV file using the button below the tables
 """)

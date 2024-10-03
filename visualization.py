@@ -13,10 +13,10 @@ def calculate_rsi(data, window=14):
     rs = gain / loss
     return 100 - (100 / (1 + rs))
 
-def plot_stock_chart(symbol):
+def plot_stock_chart(symbol, start_date, end_date):
     # Fetch historical data
     stock = yf.Ticker(symbol)
-    hist = stock.history(period="1y")
+    hist = stock.history(start=start_date, end=end_date)
     
     # Calculate technical indicators
     hist['MA20'] = calculate_ma(hist, 20)
@@ -73,12 +73,12 @@ def plot_stock_chart(symbol):
     
     return fig
 
-def plot_comparison_chart(symbols):
+def plot_comparison_chart(symbols, start_date, end_date):
     fig = go.Figure()
 
     for symbol in symbols:
         stock = yf.Ticker(symbol)
-        hist = stock.history(period="1y")
+        hist = stock.history(start=start_date, end=end_date)
         fig.add_trace(go.Scatter(x=hist.index, y=hist['Close'], name=symbol))
 
     fig.update_layout(

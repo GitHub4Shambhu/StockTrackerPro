@@ -1,16 +1,17 @@
 import yfinance as yf
 import pandas as pd
+from datetime import datetime, timedelta
 
-def get_options_data(symbol):
+def get_options_data(symbol, end_date):
     try:
         stock = yf.Ticker(symbol)
         
-        # Get the nearest expiration date
-        expirations = stock.options
+        # Get the nearest expiration date after the end_date
+        expirations = [date for date in stock.options if datetime.strptime(date, "%Y-%m-%d").date() >= end_date]
         if not expirations:
             return None
         
-        nearest_expiration = expirations[0]
+        nearest_expiration = min(expirations)
         
         # Fetch both call and put options
         calls = stock.option_chain(nearest_expiration).calls
