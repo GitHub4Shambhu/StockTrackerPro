@@ -37,9 +37,9 @@ if st.button("Analyze"):
         fig = plot_comparison_chart(symbols)
         st.plotly_chart(fig, use_container_width=True)
 
-        # Display individual stock charts
+        # Display individual stock charts with technical indicators
         for symbol in symbols:
-            st.subheader(f"{symbol} Stock Price History")
+            st.subheader(f"{symbol} Stock Price History and Technical Indicators")
             fig = plot_stock_chart(symbol)
             st.plotly_chart(fig, use_container_width=True)
 
@@ -57,10 +57,10 @@ if st.button("Analyze"):
             if options_data is not None:
                 all_data.append(options_data)
 
-        combined_data = pd.concat(all_data, axis=1)
+        combined_data = pd.concat(all_data, keys=symbols)
 
         # CSV download button
-        csv = combined_data.to_csv(index=False)
+        csv = combined_data.to_csv(index=True)
         st.download_button(
             label="Download All Data as CSV",
             data=csv,
@@ -76,7 +76,11 @@ st.sidebar.markdown("""
 2. Click the 'Analyze' button to fetch and display data
 3. View the stock information comparison table
 4. Explore the stock price comparison chart
-5. Check individual stock price history charts
+5. Check individual stock price history charts with technical indicators:
+   - Candlestick chart
+   - 20-day and 50-day Moving Averages
+   - Relative Strength Index (RSI)
+   - Volume
 6. Review options data for each stock
 7. Download all data as a CSV file using the button below the tables
 """)
