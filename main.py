@@ -19,6 +19,7 @@ symbols = st.text_input("Enter Stock Symbols (comma-separated, e.g., AAPL,GOOGL,
 symbols = [symbol.strip() for symbol in symbols]
 
 # Date range selection
+st.subheader("Select Date Range")
 col1, col2 = st.columns(2)
 with col1:
     start_date = st.date_input("Start Date", date.today() - timedelta(days=365))
