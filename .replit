@@ -15,6 +15,14 @@ author = "agent"
 task = "workflow.run"
 args = "Start Streamlit App"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Git Push"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Git Push and Create Repo"
+
 [[workflows.workflow]]
 name = "Start Streamlit App"
 author = "agent"
@@ -26,6 +34,53 @@ agentRequireRestartOnSave = false
 task = "shell.exec"
 args = "streamlit run main.py --server.port 5000"
 waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Git Push"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = """
+
+    git config --global user.name \"$GITHUB_USERNAME\"
+    git config --global user.email \"$GITHUB_USERNAME@users.noreply.github.com\"
+    git remote set-url origin \"https://$GITHUB_TOKEN@github.com/$GITHUB_USERNAME/StockTrackerPro.git\"
+    git push -u origin main
+    """
+
+[[workflows.workflow]]
+name = "Git Push and Create Repo"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = """
+
+    # Ensure we're in the main branch
+    git checkout -b main
+
+    # Create the repository if it doesn't exist
+    curl -u \"$GITHUB_USERNAME:$GITHUB_TOKEN\" https://api.github.com/user/repos -d '{\"name\":\"StockTrackerPro\"}'
+
+    # Set up Git configuration
+    git config --global user.name \"$GITHUB_USERNAME\"
+    git config --global user.email \"$GITHUB_USERNAME@users.noreply.github.com\"
+
+    # Add all files and commit
+    git add .
+    git commit -m \"Initial commit\"
+
+    # Set the remote URL and push
+    git remote set-url origin \"https://$GITHUB_TOKEN@github.com/$GITHUB_USERNAME/StockTrackerPro.git\"
+    git push -u origin main
+    """
 
 [deployment]
 run = ["sh", "-c", "streamlit run main.py --server.port 5000"]
