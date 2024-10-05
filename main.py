@@ -115,4 +115,13 @@ st.sidebar.markdown("""
    - News sentiment analysis
 7. Review options data for each stock
 8. Download all data as a CSV file using the button below the tables
+
+## GitHub Instructions
+To move this project to GitHub, please check the [GitHub Instructions](github_instructions.md) file.
 """)
+
+# Display GitHub instructions
+with open("github_instructions.md", "r") as f:
+    github_instructions = f.read()
+    st.sidebar.markdown("## GitHub Instructions")
+    st.sidebar.markdown(github_instructions)
