@@ -6,11 +6,19 @@ from options_data import get_options_data
 from visualization import plot_stock_chart, plot_comparison_chart
 from news_sentiment import get_news_sentiment
 
+# Add custom CSS
+def load_css():
+    with open(".streamlit/styles.css") as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
 st.set_page_config(
     page_title="Stock & Options Analyzer",
     page_icon="assets/favicon.svg",
     layout="wide"
 )
+
+# Load custom CSS
+load_css()
 
 st.title("Stock & Options Data Visualization")
 
